@@ -1,20 +1,26 @@
-// routes/orderRoutes.js
 const express = require('express');
 const router = express.Router();
-const { 
-  placeOrder, 
-  updateOrderStatus, 
+const {
+  placeOrder,
   getMyOrders,
-  getRestaurantOrders // NEW IMPORT
+  getOrderById,
+  getRestaurantOrders,
+  getAllOrders,
+  updateOrderStatus,
+  cancelOrder,
+  updateDeliveryLocation
 } = require('../controllers/orderController');
 const { protect, restrictTo } = require('../middleware/authMiddleware');
 
-// Customer routes
 router.post('/', protect, placeOrder);
 router.get('/myorders', protect, getMyOrders);
+router.get('/restaurant/:restaurantId', protect, restrictTo('restaurant_owner', 'admin'), getRestaurantOrders);
+router.get('/all', protect, restrictTo('admin'), getAllOrders);
+router.get('/:id', protect, getOrderById);
 
-// Restaurant Owner / Admin routes
-router.put('/:id/status', protect, restrictTo('restaurant_owner', 'admin'), updateOrderStatus);
-router.get('/restaurant/:restaurantId', protect, restrictTo('restaurant_owner', 'admin'), getRestaurantOrders); // NEW ROUTE
+// Status and tracking
+router.put('/:id/status', protect, updateOrderStatus);
+router.put('/:id/cancel', protect, cancelOrder);
+router.put('/:id/location', protect, updateDeliveryLocation);
 
 module.exports = router;

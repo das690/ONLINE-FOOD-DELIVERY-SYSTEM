@@ -1,12 +1,30 @@
-// routes/authRoutes.js
 const express = require('express');
 const router = express.Router();
-const { register, login } = require('../controllers/authController');
+const {
+  register,
+  login,
+  demoLogin,
+  getMe,
+  updateProfile,
+  addAddress,
+  deleteAddress,
+  toggleFavorite,
+  forgotPassword,
+  resetPassword
+} = require('../controllers/authController');
+const { protect } = require('../middleware/authMiddleware');
 
-// POST /api/auth/register
 router.post('/register', register);
-
-// POST /api/auth/login
 router.post('/login', login);
+router.post('/demo-login', demoLogin);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:token', resetPassword);
+
+// Protected routes
+router.get('/me', protect, getMe);
+router.put('/profile', protect, updateProfile);
+router.post('/address', protect, addAddress);
+router.delete('/address/:addressId', protect, deleteAddress);
+router.post('/favorites/:restaurantId', protect, toggleFavorite);
 
 module.exports = router;

@@ -1,48 +1,63 @@
-// middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// @desc    Check if user is authenticated with a valid JWT
+// Protect routes - requires valid JWT
 const protect = async (req, res, next) => {
   let token;
 
-  // 1. Check if the token exists in the headers
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try {
-      // 2. Extract the token (Format is "Bearer <token>")
-      token = req.headers.authorization.split(' ')[1];
-
-      // 3. Verify the token using your secret key
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // 4. Find the user in the database and attach them to the request object
-      // We use .select('-password') to ensure we don't accidentally pass the password hash along
-      req.user = await User.findById(decoded.id).select('-password');
-
-      // 5. Move to the next function (the actual route controller)
-      next();
-    } catch (error) {
-      console.error(error);
-      res.status(401).json({ message: 'Not authorized, token failed' });
-    }
+    token = req.headers.authorization.split(' ')[1];
   }
 
   if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token' });
+    return res.status(401).json({ message: 'Not authorized, please login' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.id).select('-password');
+
+    if (!user) {
+      return res.status(401).json({ message: 'User belonging to this token no longer exists' });
+    }
+
+    req.user = user;
+    return next();
+  } catch (error) {
+    return res.status(401).json({ message: 'Invalid or expired token. Please login again.' });
   }
 };
 
-// @desc    Role-based access control (e.g., restrict to 'restaurant_owner' or 'admin')
+// Optional auth - doesn't block if no token, but sets req.user if valid token present
+const optionalAuth = async (req, res, next) => {
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    return next();
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = await User.findById(decoded.id).select('-password');
+  } catch (error) {
+    // Ignore invalid token on optional routes
+  }
+  return next();
+};
+
+// Role-based authorization
 const restrictTo = (...roles) => {
   return (req, res, next) => {
-    // req.user is set by the 'protect' middleware before this runs
     if (!req.user || !roles.includes(req.user.role)) {
       return res.status(403).json({ 
-        message: 'You do not have permission to perform this action' 
+        message: 'Access denied: You do not have permission to perform this action' 
       });
     }
-    next();
+    return next();
   };
 };
 
-module.exports = { protect, restrictTo };
+module.exports = { protect, optionalAuth, restrictTo };
