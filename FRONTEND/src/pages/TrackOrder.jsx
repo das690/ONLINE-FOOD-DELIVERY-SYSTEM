@@ -50,7 +50,7 @@ const TrackOrder = () => {
     };
     fetchOrder();
 
-    const socketServerUrl = import.meta.env.VITE_SOCKET_URL || 'https://online-food-delivery-system-i0ik.onrender.com/';
+    const socketServerUrl = import.meta.env.VITE_SOCKET_URL || 'https://online-food-delivery-system-i0ik.onrender.com';
     const socketInstance = io(socketServerUrl);
     setSocket(socketInstance);
 

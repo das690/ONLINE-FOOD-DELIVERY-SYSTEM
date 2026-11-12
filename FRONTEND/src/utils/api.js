@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://online-food-delivery-system-i0ik.onrender.com/',
+  baseURL: import.meta.env.VITE_API_URL || 'https://online-food-delivery-system-i0ik.onrender.com',
 });
 
 // Request interceptor to attach JWT token
