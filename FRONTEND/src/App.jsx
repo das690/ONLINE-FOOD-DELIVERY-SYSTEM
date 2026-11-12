@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import MobileBottomNav from './components/MobileBottomNav';
 import RestaurantConflictModal from './components/RestaurantConflictModal';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -31,10 +32,13 @@ function ScrollToTop() {
 
 function App() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-800 antialiased selection:bg-orange-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-surface-50 text-surface-900 antialiased selection:bg-brand-500 selection:text-white overflow-x-hidden mesh-gradient">
       <ScrollToTop />
+      
+      {/* Top Header Navbar */}
       <Navbar />
 
+      {/* Main Content Area */}
       <main className="flex-grow">
         <Routes>
           <Route path="/" element={<Home />} />
@@ -79,7 +83,11 @@ function App() {
         </Routes>
       </main>
 
+      {/* Footer */}
       <Footer />
+
+      {/* Mobile Bottom App Navigation Bar (Visible on mobile/tablet screens < 768px) */}
+      <MobileBottomNav />
 
       {/* Global Modals */}
       <RestaurantConflictModal />

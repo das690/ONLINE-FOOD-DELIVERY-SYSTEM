@@ -44,14 +44,14 @@ const Register = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto my-12 px-4">
-      <div className="bg-white rounded-3xl p-8 shadow-xl border border-gray-100">
+    <div className="max-w-md mx-auto my-8 sm:my-14 px-4 pb-28">
+      <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-surface-200/80">
         <div className="text-center mb-8">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-500 text-white flex items-center justify-center mx-auto mb-3 shadow-md shadow-orange-500/20">
-            <UtensilsCrossed className="w-6 h-6" />
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-500 to-amber-500 text-white flex items-center justify-center mx-auto mb-3 shadow-lg shadow-brand-500/20">
+            <UtensilsCrossed className="w-7 h-7" />
           </div>
-          <h2 className="text-2xl font-black text-gray-900 tracking-tight">Create Account</h2>
-          <p className="text-xs text-gray-500 mt-1">Join FoodExpress for delicious food delivered fast</p>
+          <h2 className="text-2xl sm:text-3xl font-black text-surface-900 tracking-tight">Create Account</h2>
+          <p className="text-xs sm:text-sm text-surface-500 mt-1 font-medium">Join FoodExpress for culinary happiness delivered fast</p>
         </div>
 
         {error && (
@@ -62,69 +62,69 @@ const Register = () => {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1">Full Name</label>
+            <label className="block text-xs font-black text-surface-700 mb-1">Full Name</label>
             <div className="relative">
-              <User className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <User className="w-4 h-4 text-surface-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Rahul Sharma"
-                className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full pl-10 pr-4 py-3 bg-surface-50 border border-surface-200 rounded-xl text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-brand-500"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1">Email Address</label>
+            <label className="block text-xs font-black text-surface-700 mb-1">Email Address</label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 text-surface-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="name@example.com"
-                className="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full pl-10 pr-4 py-3 bg-surface-50 border border-surface-200 rounded-xl text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-brand-500"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1">Password</label>
+            <label className="block text-xs font-black text-surface-700 mb-1">Password</label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-surface-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="At least 6 characters"
-                className="w-full pl-9 pr-10 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full pl-10 pr-11 py-3 bg-surface-50 border border-surface-200 rounded-xl text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-brand-500"
                 required
                 minLength={6}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-400 hover:text-surface-600 p-1 touch-target"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Account Type</label>
+              <label className="block text-xs font-black text-surface-700 mb-1">Account Type</label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full py-2.5 px-3 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full py-3 px-3 bg-surface-50 border border-surface-200 rounded-xl text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="customer">Foodie (Customer)</option>
                 <option value="restaurant_owner">Restaurant Partner</option>
@@ -133,25 +133,25 @@ const Register = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1">Contact Phone</label>
+              <label className="block text-xs font-black text-surface-700 mb-1">Contact Phone</label>
               <div className="relative">
-                <Phone className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Phone className="w-4 h-4 text-surface-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   name="phone"
                   value={formData.phone}
                   onChange={handleChange}
                   placeholder="+91 98765 00000"
-                  className="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-orange-500"
+                  className="w-full pl-10 pr-3 py-3 bg-surface-50 border border-surface-200 rounded-xl text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             </div>
           </div>
 
-          {/* Admin Secret Code if Admin is chosen */}
+          {/* Admin Secret Code */}
           {formData.role === 'admin' && (
-            <div className="p-3 bg-purple-50 rounded-2xl border border-purple-200">
-              <label className="block text-xs font-bold text-purple-900 mb-1 flex items-center space-x-1">
+            <div className="p-3.5 bg-purple-50 rounded-2xl border border-purple-200">
+              <label className="block text-xs font-black text-purple-900 mb-1 flex items-center space-x-1.5">
                 <ShieldAlert className="w-4 h-4 text-purple-600" />
                 <span>Admin Secret Key (GUVI-ADMIN)</span>
               </label>
@@ -161,23 +161,23 @@ const Register = () => {
                 value={formData.adminSecret}
                 onChange={handleChange}
                 placeholder="Enter GUVI-ADMIN to verify"
-                className="w-full p-2 bg-white border border-purple-300 rounded-xl text-xs font-medium"
+                className="w-full p-2.5 bg-white border border-purple-300 rounded-xl text-xs sm:text-sm font-semibold"
                 required
               />
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-bold text-gray-700 mb-1">Default Delivery Address</label>
+            <label className="block text-xs font-black text-surface-700 mb-1">Default Delivery Address</label>
             <div className="relative">
-              <MapPin className="w-4 h-4 text-gray-400 absolute left-3 top-3" />
+              <MapPin className="w-4 h-4 text-surface-400 absolute left-3.5 top-3.5" />
               <textarea
                 rows="2"
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
                 placeholder="House / Flat No., Street, City"
-                className="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium outline-none focus:ring-2 focus:ring-orange-500"
+                className="w-full pl-10 pr-4 py-2.5 bg-surface-50 border border-surface-200 rounded-xl text-xs sm:text-sm font-semibold outline-none focus:ring-2 focus:ring-brand-500"
               ></textarea>
             </div>
           </div>
@@ -185,15 +185,15 @@ const Register = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-extrabold text-xs rounded-xl shadow-md shadow-orange-500/25 transition active:scale-95"
+            className="w-full py-3.5 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white font-black text-xs sm:text-sm rounded-xl shadow-lg shadow-brand-500/25 transition active:scale-95 touch-target"
           >
             {loading ? 'Creating account...' : 'Create Account'}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-gray-500">
+        <p className="mt-6 text-center text-xs text-surface-500 font-medium">
           Already registered?{' '}
-          <Link to="/login" className="text-orange-600 font-extrabold hover:underline">
+          <Link to="/login" className="text-brand-600 font-black hover:underline">
             Login here
           </Link>
         </p>

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { Search, MapPin, Sparkles, Flame, Clock, Award } from 'lucide-react';
+import { Search, MapPin, Sparkles, Flame, Clock, Award, X, Utensils, Zap, TrendingUp } from 'lucide-react';
 import api from '../utils/api';
 import RestaurantCard from '../components/RestaurantCard';
 import CategoryBar from '../components/CategoryBar';
 import FilterBar from '../components/FilterBar';
+
+const QUICK_TAGS = ['Biryani', 'Pizza', 'Burger', 'Paneer', 'Chinese', 'Desserts', 'Dosa'];
 
 const Home = () => {
   const { selectedCity } = useSelector((state) => state.auth);
@@ -51,7 +53,7 @@ const Home = () => {
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       fetchRestaurants();
-    }, 400);
+    }, 350);
 
     return () => clearTimeout(delayDebounce);
   }, [searchTerm]);
@@ -78,29 +80,31 @@ const Home = () => {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      {/* Hero Search Section */}
-      <div className="relative rounded-3xl overflow-hidden mb-12 shadow-2xl bg-gradient-to-r from-orange-600 via-amber-600 to-rose-600 p-8 sm:p-12 text-white">
-        {/* Background Decorative Rings */}
-        <div className="absolute -right-20 -bottom-20 w-80 h-80 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
-        <div className="absolute left-10 -top-10 w-40 h-40 rounded-full bg-amber-400/20 blur-xl pointer-events-none"></div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      {/* Hero Showcase Section */}
+      <section className="relative rounded-3xl overflow-hidden mb-12 shadow-2xl bg-gradient-to-br from-brand-600 via-amber-600 to-rose-600 p-6 sm:p-10 lg:p-14 text-white">
+        {/* Dynamic Background Mesh Accents */}
+        <div className="absolute -right-24 -bottom-24 w-96 h-96 rounded-full bg-white/10 blur-3xl pointer-events-none"></div>
+        <div className="absolute left-8 -top-12 w-64 h-64 rounded-full bg-amber-400/20 blur-2xl pointer-events-none"></div>
 
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider text-orange-100 mb-4">
-            <Sparkles className="w-3.5 h-3.5" />
+        <div className="relative z-10 max-w-3xl">
+          {/* Location Badge */}
+          <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider text-amber-100 mb-4 border border-white/20">
+            <Sparkles className="w-3.5 h-3.5 text-amber-200" />
             <span>Delivering across {selectedCity}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-3">
-            Craving something delicious?
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.1] mb-3">
+            Craving something <span className="underline decoration-amber-300 decoration-wavy decoration-2">delicious</span>?
           </h1>
-          <p className="text-base sm:text-lg text-orange-100 mb-8 font-medium">
-            Order from top gourmet kitchens, popular street hubs, and trending dessert bars near you.
+          <p className="text-sm sm:text-base lg:text-lg text-amber-100 mb-8 font-medium max-w-xl leading-relaxed">
+            Order from handcrafted gourmet kitchens, trending street hubs, and artisanal dessert bars near you.
           </p>
 
-          {/* Search Box */}
-          <div className="bg-white rounded-2xl p-2 shadow-xl flex items-center text-gray-800 border border-white/40">
-            <div className="pl-3 pr-2 text-orange-500">
+          {/* Search Box Capsule */}
+          <div className="bg-white rounded-2xl p-2 sm:p-2.5 shadow-2xl flex items-center text-surface-800 border border-white/50 focus-within:ring-4 focus-within:ring-brand-400/30 transition-all">
+            <div className="pl-3 pr-2 text-brand-500 shrink-0">
               <Search className="w-5 h-5" />
             </div>
             <input
@@ -108,61 +112,103 @@ const Home = () => {
               placeholder="Search for biryani, pizza, rolls, or restaurants..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 py-2 px-2 text-sm sm:text-base outline-none text-gray-800 placeholder-gray-400 font-medium"
+              className="flex-1 py-2 px-2 text-xs sm:text-sm md:text-base outline-none text-surface-900 placeholder-surface-400 font-bold bg-transparent"
             />
             {searchTerm && (
               <button
+                type="button"
                 onClick={() => setSearchTerm('')}
-                className="text-xs text-gray-400 hover:text-gray-600 px-2 font-bold"
+                className="text-xs text-surface-400 hover:text-surface-700 px-2 font-bold touch-target"
+                aria-label="Clear search"
               >
-                Clear
+                <X className="w-4 h-4" />
               </button>
             )}
             <button
+              type="button"
               onClick={fetchRestaurants}
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-5 py-2.5 rounded-xl transition shadow-md active:scale-95 text-sm"
+              className="bg-brand-500 hover:bg-brand-600 text-white font-black px-4 sm:px-6 py-2.5 rounded-xl transition shadow-md shadow-brand-500/30 active:scale-95 text-xs sm:text-sm shrink-0 touch-target"
             >
               Search
             </button>
           </div>
-        </div>
-      </div>
 
-      {/* Cuisine Story Circles: "What's on your mind?" */}
+          {/* Quick Search Chips */}
+          <div className="flex flex-wrap items-center gap-2 mt-4">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-amber-200 flex items-center space-x-1">
+              <TrendingUp className="w-3 h-3" />
+              <span>Popular:</span>
+            </span>
+            {QUICK_TAGS.map((tag) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => setSearchTerm(tag)}
+                className="text-[11px] font-bold bg-white/15 hover:bg-white/25 text-white px-2.5 py-1 rounded-lg backdrop-blur-xs transition active:scale-95 border border-white/15"
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Floating Decorative Badges (Desktop) */}
+        <div className="hidden lg:block absolute right-12 top-1/2 -translate-y-1/2 space-y-4 pointer-events-none">
+          <div className="glass-dark px-4 py-2.5 rounded-2xl border border-white/20 shadow-xl flex items-center space-x-3 animate-float">
+            <span className="text-2xl">⚡</span>
+            <div>
+              <p className="text-xs font-black text-white">25-Min Lightning</p>
+              <p className="text-[10px] text-amber-300">Fastest delivery guarantee</p>
+            </div>
+          </div>
+          <div className="glass-dark px-4 py-2.5 rounded-2xl border border-white/20 shadow-xl flex items-center space-x-3 animate-float-delayed">
+            <span className="text-2xl">⭐</span>
+            <div>
+              <p className="text-xs font-black text-white">4.8+ Top Rated</p>
+              <p className="text-[10px] text-amber-300">Chef curated spots</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Cuisine Story Circles */}
       <CategoryBar
         activeCategory={activeCategory}
         onSelectCategory={(cat) => setActiveCategory(cat)}
       />
 
       {/* Promotional Value Banners */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-        <div className="rounded-2xl p-5 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold text-xl shadow-md">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
+        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-brand-50 to-amber-50 border border-brand-200/60 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-brand-600 to-amber-500 text-white flex items-center justify-center font-black text-xl shadow-md shrink-0">
             %
           </div>
           <div>
-            <h4 className="font-extrabold text-gray-900 text-sm">UP TO 50% OFF</h4>
-            <p className="text-xs text-gray-500">Use code WELCOME50 on first order</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-brand-600">Promo Code</span>
+            <h4 className="font-black text-surface-900 text-sm sm:text-base">UP TO 50% OFF</h4>
+            <p className="text-xs text-surface-500 mt-0.5">Apply WELCOME50 on checkout</p>
           </div>
         </div>
 
-        <div className="rounded-2xl p-5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100 flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold shadow-md">
+        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/60 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black shadow-md shrink-0">
             <Clock className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="font-extrabold text-gray-900 text-sm">30-MIN DELIVERY</h4>
-            <p className="text-xs text-gray-500">Live GPS tracking on every order</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600">Live GPS</span>
+            <h4 className="font-black text-surface-900 text-sm sm:text-base">30-MIN DELIVERY</h4>
+            <p className="text-xs text-surface-500 mt-0.5">Real-time driver location radar</p>
           </div>
         </div>
 
-        <div className="rounded-2xl p-5 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100 flex items-center space-x-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-500 text-white flex items-center justify-center font-bold shadow-md">
+        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200/60 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
+          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-500 text-white flex items-center justify-center font-black shadow-md shrink-0">
             <Award className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="font-extrabold text-gray-900 text-sm">GOURMET CHEF PICKS</h4>
-            <p className="text-xs text-gray-500">Hygiene audited kitchens</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-purple-600">Verified Kitchens</span>
+            <h4 className="font-black text-surface-900 text-sm sm:text-base">GOURMET CHEF PICKS</h4>
+            <p className="text-xs text-surface-500 mt-0.5">100% hygiene and safety audited</p>
           </div>
         </div>
       </div>
@@ -175,15 +221,15 @@ const Home = () => {
       />
 
       {/* Main Section Header */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-wrap justify-between items-center mb-6 gap-2">
         <div>
-          <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight flex items-center space-x-2">
+          <h2 className="text-xl sm:text-2xl font-black text-surface-900 tracking-tight flex items-center space-x-2.5">
             <span>Restaurants with Online Delivery</span>
-            <span className="text-xs bg-orange-100 text-orange-700 font-extrabold px-2.5 py-0.5 rounded-full">
+            <span className="text-xs bg-brand-100 text-brand-700 font-black px-2.5 py-0.5 rounded-full">
               {displayedRestaurants.length}
             </span>
           </h2>
-          <p className="text-xs text-gray-500 mt-0.5">Top-rated spots ready to take your order</p>
+          <p className="text-xs text-surface-500 mt-0.5">Top-rated spots ready to take your order</p>
         </div>
       </div>
 
@@ -191,44 +237,48 @@ const Home = () => {
       {loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...Array(8)].map((_, idx) => (
-            <div key={idx} className="bg-white rounded-2xl overflow-hidden shadow-xs border border-gray-100 animate-pulse">
-              <div className="h-48 bg-gray-200"></div>
-              <div className="p-4 space-y-3">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-3 bg-gray-200 rounded w-full"></div>
+            <div key={idx} className="bg-white rounded-3xl overflow-hidden shadow-xs border border-surface-200 animate-pulse flex flex-col h-80">
+              <div className="h-48 bg-surface-200"></div>
+              <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
+                <div className="space-y-2">
+                  <div className="h-4 bg-surface-200 rounded-lg w-3/4"></div>
+                  <div className="h-3 bg-surface-200 rounded-lg w-1/2"></div>
+                </div>
+                <div className="h-3 bg-surface-200 rounded-lg w-full"></div>
               </div>
             </div>
           ))}
         </div>
       ) : error ? (
-        <div className="bg-rose-50 border border-rose-200 text-rose-700 p-8 rounded-2xl text-center max-w-xl mx-auto my-12">
-          <p className="font-bold mb-2">{error}</p>
+        <div className="bg-rose-50 border border-rose-200 text-rose-700 p-8 rounded-3xl text-center max-w-xl mx-auto my-12 shadow-sm">
+          <p className="font-bold mb-3">{error}</p>
           <button
+            type="button"
             onClick={fetchRestaurants}
-            className="mt-3 bg-rose-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-rose-700 transition"
+            className="bg-rose-600 text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-rose-700 transition shadow-md touch-target"
           >
             Retry Connection
           </button>
         </div>
       ) : displayedRestaurants.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-3xl border border-gray-100 shadow-xs max-w-lg mx-auto">
-          <div className="w-16 h-16 rounded-full bg-orange-50 text-orange-500 mx-auto flex items-center justify-center mb-4">
+        <div className="text-center py-20 bg-white rounded-3xl border border-surface-200 shadow-xs max-w-lg mx-auto p-8">
+          <div className="w-16 h-16 rounded-3xl bg-brand-50 text-brand-500 mx-auto flex items-center justify-center mb-4 shadow-sm">
             <Search className="w-8 h-8" />
           </div>
-          <h3 className="text-xl font-bold text-gray-900 mb-1">No restaurants found</h3>
-          <p className="text-gray-500 text-sm mb-6">
-            We couldn't find any match for your search criteria. Try modifying your filters.
+          <h3 className="text-xl font-black text-surface-900 mb-1">No restaurants found</h3>
+          <p className="text-surface-500 text-xs sm:text-sm mb-6 leading-relaxed">
+            We couldn't find any match for your search criteria in {selectedCity}. Try modifying or clearing your filters.
           </p>
           <button
+            type="button"
             onClick={handleResetFilters}
-            className="bg-orange-500 text-white font-bold px-6 py-2.5 rounded-xl text-sm shadow-md hover:bg-orange-600 transition"
+            className="bg-brand-500 text-white font-extrabold px-6 py-3 rounded-2xl text-xs sm:text-sm shadow-md shadow-brand-500/25 hover:bg-brand-600 transition touch-target"
           >
             Reset All Filters
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
           {displayedRestaurants.map((restaurant) => (
             <RestaurantCard key={restaurant._id} restaurant={restaurant} />
           ))}
