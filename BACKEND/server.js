@@ -11,7 +11,7 @@ const server = http.createServer(app);
 // Initialize Socket.io
 const io = new Server(server, {
   cors: {
-    origin: '*', // Allow frontend dev and preview servers
+    origin: 'https://fooodexpress.netlify.app/', // Allow frontend dev and preview servers
     methods: ['GET', 'POST', 'PUT', 'DELETE']
   }
 });
