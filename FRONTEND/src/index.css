@@ -20,6 +20,12 @@
     overflow-x: hidden;
     background-color: #fafaf9;
     color: #1c1917;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  html.dark body {
+    background-color: #0c0a09;
+    color: #f5f5f4;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -43,6 +49,13 @@
     border: 1px solid rgba(255, 255, 255, 0.6);
   }
 
+  .dark .glass {
+    background-color: rgba(24, 24, 27, 0.85);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
   .glass-dark {
     background-color: rgba(18, 16, 15, 0.85);
     backdrop-filter: blur(16px);
@@ -55,6 +68,11 @@
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.7);
+  }
+
+  .dark .glass-card {
+    background-color: rgba(28, 25, 23, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   /* Text Gradients */
@@ -70,6 +88,12 @@
     -webkit-text-fill-color: transparent;
   }
 
+  .dark .text-gradient-dark {
+    background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 70%, #fb923c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   /* Mesh Background Glow */
   .mesh-gradient {
     background-color: #fafaf9;
@@ -77,6 +101,102 @@
       radial-gradient(at 15% 10%, rgba(249, 115, 22, 0.08) 0px, transparent 55%),
       radial-gradient(at 85% 15%, rgba(245, 158, 11, 0.07) 0px, transparent 50%),
       radial-gradient(at 50% 90%, rgba(225, 29, 72, 0.04) 0px, transparent 60%);
+  }
+
+  .dark .mesh-gradient {
+    background-color: #0c0a09;
+    background-image: 
+      radial-gradient(at 15% 10%, rgba(249, 115, 22, 0.12) 0px, transparent 55%),
+      radial-gradient(at 85% 15%, rgba(245, 158, 11, 0.08) 0px, transparent 50%),
+      radial-gradient(at 50% 90%, rgba(225, 29, 72, 0.06) 0px, transparent 60%);
+  }
+
+  /* Dark Theme Automated Component Elevators */
+  .dark .bg-surface-50 {
+    background-color: #0c0a09 !important;
+  }
+
+  .dark .bg-white {
+    background-color: #1c1917 !important;
+    color: #f5f5f4;
+  }
+
+  .dark .bg-surface-100 {
+    background-color: #292524 !important;
+  }
+
+  .dark .bg-surface-200 {
+    background-color: #383431 !important;
+  }
+
+  .dark .text-surface-900 {
+    color: #f5f5f4 !important;
+  }
+
+  .dark .text-surface-800 {
+    color: #e7e5e4 !important;
+  }
+
+  .dark .text-surface-700 {
+    color: #d6d3d1 !important;
+  }
+
+  .dark .text-surface-600 {
+    color: #a8a29e !important;
+  }
+
+  .dark .text-surface-500 {
+    color: #948e89 !important;
+  }
+
+  .dark .text-surface-400 {
+    color: #78716c !important;
+  }
+
+  .dark .border-surface-200,
+  .dark .border-surface-200\/80,
+  .dark .border-surface-200\/90,
+  .dark .border-surface-200\/70 {
+    border-color: #292524 !important;
+  }
+
+  .dark .border-surface-100 {
+    border-color: #24201e !important;
+  }
+
+  .dark .divide-surface-100 > :not([hidden]) ~ :not([hidden]) {
+    border-color: #24201e !important;
+  }
+
+  .dark input:not([type="checkbox"]):not([type="radio"]),
+  .dark textarea,
+  .dark select {
+    background-color: #171514 !important;
+    color: #f5f5f4 !important;
+    border-color: #383431 !important;
+  }
+
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: #78716c !important;
+  }
+
+  .dark .hover\:bg-surface-100:hover {
+    background-color: #292524 !important;
+  }
+
+  .dark .hover\:bg-surface-50:hover {
+    background-color: #201d1b !important;
+  }
+
+  .dark .shadow-xs,
+  .dark .shadow-sm {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  .dark .shadow-md,
+  .dark .shadow-xl {
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
   }
 
   /* Custom Touch Target Helper */
@@ -104,4 +224,18 @@
 }
 .pt-safe {
   padding-top: max(1rem, var(--sat));
+}
+
+/* Print Styles for Tax Invoice */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  header, footer, nav, .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
 }

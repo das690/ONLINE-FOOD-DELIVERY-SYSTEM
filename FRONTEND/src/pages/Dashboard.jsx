@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { addToCart } from '../redux/cartSlice';
 import { updateUserProfile, setSavedAddresses } from '../redux/authSlice';
 import api from '../utils/api';
+import InvoiceModal from '../components/InvoiceModal';
 import {
   ShoppingBag,
   MapPin,
@@ -20,7 +21,8 @@ import {
   Eye,
   RefreshCw,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Receipt
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -32,6 +34,7 @@ const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('orders');
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
+  const [invoiceOrder, setInvoiceOrder] = useState(null);
   const [profileForm, setProfileForm] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
@@ -371,17 +374,26 @@ const Dashboard = () => {
 
                     {/* Customer Actions */}
                     {!isOwnerOrAdmin && (
-                      <div className="flex space-x-2">
+                      <div className="flex flex-wrap gap-2">
                         <Link
                           to={`/track/${order._id}`}
-                          className="bg-brand-500 hover:bg-brand-600 text-white font-black text-xs px-4 py-2.5 rounded-xl shadow-xs transition touch-target"
+                          className="bg-brand-500 hover:bg-brand-600 text-white font-black text-xs px-3.5 py-2.5 rounded-xl shadow-xs transition touch-target"
                         >
                           Track Live
                         </Link>
                         <button
                           type="button"
+                          onClick={() => setInvoiceOrder(order)}
+                          className="border border-surface-200 text-surface-700 hover:text-brand-600 font-black text-xs px-3 py-2.5 rounded-xl hover:bg-surface-50 transition touch-target flex items-center space-x-1"
+                          title="Tax Invoice"
+                        >
+                          <Receipt className="w-3.5 h-3.5 text-brand-500" />
+                          <span>Invoice</span>
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => handleReorder(order)}
-                          className="border border-surface-200 text-surface-700 font-black text-xs px-4 py-2.5 rounded-xl hover:bg-surface-50 transition touch-target"
+                          className="border border-surface-200 text-surface-700 font-black text-xs px-3.5 py-2.5 rounded-xl hover:bg-surface-50 transition touch-target"
                         >
                           Reorder
                         </button>
@@ -615,6 +627,13 @@ const Dashboard = () => {
           </form>
         </div>
       )}
+
+      {/* Tax Invoice Modal */}
+      <InvoiceModal
+        order={invoiceOrder}
+        isOpen={!!invoiceOrder}
+        onClose={() => setInvoiceOrder(null)}
+      />
     </div>
   );
 };

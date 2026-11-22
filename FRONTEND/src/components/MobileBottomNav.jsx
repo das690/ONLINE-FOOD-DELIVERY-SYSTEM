@@ -23,7 +23,7 @@ const MobileBottomNav = () => {
   return (
     <nav
       aria-label="Mobile Bottom Navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 backdrop-blur-xl border-t border-surface-200/80 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] pb-[max(0.5rem,env(safe-area-inset-bottom))]"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-stone-900/90 backdrop-blur-xl border-t border-surface-200/80 dark:border-stone-800 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] pb-[max(0.5rem,env(safe-area-inset-bottom))]"
     >
       <div className="grid grid-cols-4 items-center justify-around h-16 max-w-md mx-auto px-2">
         {navItems.map((item) => {
@@ -36,8 +36,8 @@ const MobileBottomNav = () => {
               className={({ isActive }) =>
                 `flex flex-col items-center justify-center py-1 transition-all duration-200 relative group touch-target ${
                   isActive
-                    ? 'text-brand-600 font-bold scale-105'
-                    : 'text-surface-500 hover:text-surface-800'
+                    ? 'text-brand-600 dark:text-brand-400 font-bold scale-105'
+                    : 'text-surface-500 dark:text-stone-400 hover:text-surface-800 dark:hover:text-stone-200'
                 }`
               }
             >

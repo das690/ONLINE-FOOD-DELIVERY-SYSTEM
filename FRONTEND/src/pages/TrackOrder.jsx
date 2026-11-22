@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { io } from 'socket.io-client';
 import api from '../utils/api';
 import LiveMapSimulator from '../components/LiveMapSimulator';
+import InvoiceModal from '../components/InvoiceModal';
+import { addToast } from '../redux/uiSlice';
 import {
   CheckCircle2,
   Clock,
@@ -15,7 +18,10 @@ import {
   XCircle,
   FileText,
   MapPin,
-  ShieldCheck
+  ShieldCheck,
+  Receipt,
+  Leaf,
+  Timer
 } from 'lucide-react';
 
 const steps = [
@@ -29,12 +35,35 @@ const steps = [
 const TrackOrder = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [order, setOrder] = useState(null);
   const [currentStatus, setCurrentStatus] = useState('Pending');
   const [loading, setLoading] = useState(true);
   const [socket, setSocket] = useState(null);
   const [cancelling, setCancelling] = useState(false);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [timeLeftSeconds, setTimeLeftSeconds] = useState(24 * 60);
+
+  // Live countdown timer calculation
+  useEffect(() => {
+    if (!order?.createdAt) return;
+
+    const estMinutes = order.estimatedDeliveryMinutes || 30;
+    const orderTime = new Date(order.createdAt).getTime();
+    const targetTime = orderTime + estMinutes * 60 * 1000;
+
+    const interval = setInterval(() => {
+      const remainingMs = targetTime - Date.now();
+      if (remainingMs <= 0) {
+        setTimeLeftSeconds(0);
+      } else {
+        setTimeLeftSeconds(Math.floor(remainingMs / 1000));
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [order?.createdAt, order?.estimatedDeliveryMinutes]);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -60,6 +89,10 @@ const TrackOrder = () => {
       if (data.status) {
         setCurrentStatus(data.status);
         setOrder((prev) => (prev ? { ...prev, status: data.status } : prev));
+        dispatch(addToast({
+          message: `Order #${orderId.slice(-6).toUpperCase()} is now ${data.status}! 🛵`,
+          type: data.status === 'Delivered' ? 'success' : 'info'
+        }));
       }
     });
 
@@ -110,7 +143,7 @@ const TrackOrder = () => {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-32">
       {/* Top Navigation */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <Link
           to="/"
           className="text-xs font-bold text-surface-500 hover:text-brand-600 flex items-center space-x-1.5 transition touch-target"
@@ -119,18 +152,30 @@ const TrackOrder = () => {
           <span>Back to Restaurants</span>
         </Link>
 
-        {/* Cancellation Button */}
-        {(currentStatus === 'Pending' || currentStatus === 'Confirmed') && (
+        <div className="flex items-center space-x-2">
+          {/* View Tax Invoice Button */}
           <button
             type="button"
-            onClick={handleCancelOrder}
-            disabled={cancelling}
-            className="text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3.5 py-2 rounded-xl transition flex items-center space-x-1.5 touch-target"
+            onClick={() => setIsInvoiceOpen(true)}
+            className="text-xs font-bold text-surface-700 dark:text-stone-200 bg-surface-100 hover:bg-surface-200 dark:bg-stone-800 dark:hover:bg-stone-700 px-3.5 py-2 rounded-xl transition flex items-center space-x-1.5 touch-target border border-surface-200 dark:border-stone-700"
           >
-            <XCircle className="w-3.5 h-3.5" />
-            <span>{cancelling ? 'Cancelling...' : 'Cancel Order'}</span>
+            <Receipt className="w-3.5 h-3.5 text-brand-500" />
+            <span>Tax Invoice</span>
           </button>
-        )}
+
+          {/* Cancellation Button */}
+          {(currentStatus === 'Pending' || currentStatus === 'Confirmed') && (
+            <button
+              type="button"
+              onClick={handleCancelOrder}
+              disabled={cancelling}
+              className="text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3.5 py-2 rounded-xl transition flex items-center space-x-1.5 touch-target"
+            >
+              <XCircle className="w-3.5 h-3.5" />
+              <span>{cancelling ? 'Cancelling...' : 'Cancel Order'}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Order Header Card */}
@@ -155,6 +200,30 @@ const TrackOrder = () => {
             </span>
           </div>
         </div>
+
+        {/* Live Delivery Countdown Timer Banner */}
+        {currentStatus !== 'Cancelled' && currentStatus !== 'Delivered' && (
+          <div className="mt-4 p-4 rounded-2xl bg-gradient-to-r from-brand-50 to-amber-50 border border-brand-200/70 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 rounded-xl bg-brand-500 text-white flex items-center justify-center font-black animate-pulse shadow-md">
+                <Timer className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-wider text-brand-600">
+                  Estimated Delivery Countdown
+                </p>
+                <h4 className="text-base sm:text-lg font-black text-surface-900">
+                  {timeLeftSeconds > 0
+                    ? `${Math.floor(timeLeftSeconds / 60)}m ${String(timeLeftSeconds % 60).padStart(2, '0')}s remaining`
+                    : 'Arriving any moment! 🛵'}
+                </h4>
+              </div>
+            </div>
+            <span className="text-xs font-black text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
+              ⚡ On Schedule
+            </span>
+          </div>
+        )}
 
         {/* Live Status Progress Stepper */}
         {currentStatus === 'Cancelled' ? (
@@ -320,11 +389,39 @@ const TrackOrder = () => {
               <span>- ₹{order.discount}</span>
             </div>
           )}
+          {order.tip > 0 && (
+            <div className="flex justify-between text-brand-600 font-bold">
+              <span>Delivery Partner Tip</span>
+              <span>+ ₹{order.tip}</span>
+            </div>
+          )}
           <div className="flex justify-between text-base font-black text-surface-900 pt-3 border-t border-surface-100">
             <span>Total Paid</span>
             <span className="text-brand-600 text-lg">₹{order.totalAmount}</span>
           </div>
         </div>
+
+        {/* Eco Preferences Badges */}
+        {order.deliveryPreferences && (
+          <div className="mt-4 pt-3 border-t border-surface-100 flex flex-wrap gap-2 text-xs">
+            {order.deliveryPreferences.noCutlery && (
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold flex items-center space-x-1 border border-emerald-200/60">
+                <Leaf className="w-3.5 h-3.5" />
+                <span>No plastic cutlery requested</span>
+              </span>
+            )}
+            {order.deliveryPreferences.contactless && (
+              <span className="px-2.5 py-1 rounded-lg bg-brand-50 text-brand-700 font-bold border border-brand-200/60">
+                🚪 Contactless delivery
+              </span>
+            )}
+            {order.deliveryPreferences.dontRingBell && (
+              <span className="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-700 font-bold border border-purple-200/60">
+                🔕 Do not ring doorbell
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Delivery Address Note */}
         {order.deliveryAddress && (
@@ -339,6 +436,13 @@ const TrackOrder = () => {
           </div>
         )}
       </div>
+
+      {/* Tax Invoice Modal */}
+      <InvoiceModal
+        order={order}
+        isOpen={isInvoiceOpen}
+        onClose={() => setIsInvoiceOpen(false)}
+      />
     </div>
   );
 };

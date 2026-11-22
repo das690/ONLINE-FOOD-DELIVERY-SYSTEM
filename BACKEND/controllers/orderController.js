@@ -12,7 +12,9 @@ exports.placeOrder = async (req, res) => {
       deliveryAddress,
       paymentMethod = 'razorpay',
       couponCode = '',
-      specialInstructions = ''
+      specialInstructions = '',
+      tip = 0,
+      deliveryPreferences = {}
     } = req.body;
 
     if (!restaurantId || !items || !Array.isArray(items) || items.length === 0) {
@@ -76,7 +78,8 @@ exports.placeOrder = async (req, res) => {
       }
     }
 
-    const totalAmount = Math.max(0, subtotal + deliveryFee + tax - discount);
+    const tipAmount = Math.max(0, Number(tip) || 0);
+    const totalAmount = Math.max(0, subtotal + deliveryFee + tax - discount + tipAmount);
 
     // 4. Format delivery address
     let formattedAddress = {};
@@ -103,8 +106,15 @@ exports.placeOrder = async (req, res) => {
       deliveryFee,
       tax,
       discount,
+      tip: tipAmount,
       totalAmount,
       couponCode: appliedCoupon,
+      deliveryPreferences: {
+        noCutlery: !!deliveryPreferences?.noCutlery,
+        contactless: !!deliveryPreferences?.contactless,
+        dontRingBell: !!deliveryPreferences?.dontRingBell,
+        dropAtSecurity: !!deliveryPreferences?.dropAtSecurity
+      },
       status: initialStatus,
       statusTimeline: [
         { status: 'Order Placed', timestamp: new Date(), note: 'Order successfully submitted' },

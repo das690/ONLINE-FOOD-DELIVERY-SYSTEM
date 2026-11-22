@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { clearCart } from '../redux/cartSlice';
 import { setSavedAddresses } from '../redux/authSlice';
+import { addToast } from '../redux/uiSlice';
 import {
   MapPin,
   CreditCard,
@@ -24,7 +25,7 @@ const Checkout = () => {
 
   const specialInstructions = location.state?.specialInstructions || '';
 
-  const { items, restaurantId, restaurantName, subtotal, deliveryFee, tax, discount, totalAmount, appliedCoupon } = useSelector(
+  const { items, restaurantId, restaurantName, subtotal, deliveryFee, tax, discount, tip, deliveryPreferences, totalAmount, appliedCoupon } = useSelector(
     (state) => state.cart
   );
   const { user } = useSelector((state) => state.auth);
@@ -113,7 +114,9 @@ const Checkout = () => {
         deliveryAddress: activeAddress,
         paymentMethod,
         couponCode: appliedCoupon?.code || '',
-        specialInstructions
+        specialInstructions,
+        tip: Number(tip || 0),
+        deliveryPreferences: deliveryPreferences || {}
       };
 
       const orderRes = await api.post('/orders', orderPayload);
@@ -511,6 +514,12 @@ const Checkout = () => {
                 <div className="flex justify-between text-emerald-600 font-bold">
                   <span>Discount</span>
                   <span>- ₹{discount}</span>
+                </div>
+              )}
+              {tip > 0 && (
+                <div className="flex justify-between text-brand-600 font-bold">
+                  <span>Delivery Partner Tip</span>
+                  <span>+ ₹{tip}</span>
                 </div>
               )}
               <div className="pt-3 border-t border-surface-100 flex justify-between text-base font-black text-surface-900">

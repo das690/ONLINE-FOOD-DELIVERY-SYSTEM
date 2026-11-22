@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Star, Clock, Heart, MapPin, Sparkles } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { toggleFavoriteLocal } from '../redux/authSlice';
+import { addToast } from '../redux/uiSlice';
 import api from '../utils/api';
 
 const RestaurantCard = ({ restaurant }) => {
@@ -23,6 +24,10 @@ const RestaurantCard = ({ restaurant }) => {
 
     try {
       dispatch(toggleFavoriteLocal(restaurant._id));
+      dispatch(addToast({
+        message: isFav ? `Removed ${restaurant.name} from Favorites` : `Added ${restaurant.name} to Favorites ❤️`,
+        type: isFav ? 'info' : 'success'
+      }));
       await api.post(`/auth/favorites/${restaurant._id}`);
     } catch (err) {
       console.error('Failed to toggle favorite', err);

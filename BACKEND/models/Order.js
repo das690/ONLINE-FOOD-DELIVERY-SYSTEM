@@ -25,8 +25,15 @@ const orderSchema = new mongoose.Schema({
   deliveryFee: { type: Number, default: 40 },
   tax: { type: Number, default: 0 },
   discount: { type: Number, default: 0 },
+  tip: { type: Number, default: 0 },
   totalAmount: { type: Number, required: true },
   couponCode: { type: String, default: '' },
+  deliveryPreferences: {
+    noCutlery: { type: Boolean, default: false },
+    contactless: { type: Boolean, default: false },
+    dontRingBell: { type: Boolean, default: false },
+    dropAtSecurity: { type: Boolean, default: false }
+  },
   status: { 
     type: String, 
     enum: ['Pending', 'Confirmed', 'Preparing', 'Out for Delivery', 'Delivered', 'Cancelled'], 

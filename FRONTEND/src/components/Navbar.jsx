@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout, setSelectedCity } from '../redux/authSlice';
+import { toggleTheme } from '../redux/themeSlice';
+import { addToast } from '../redux/uiSlice';
 import {
   UtensilsCrossed,
   MapPin,
@@ -14,7 +16,9 @@ import {
   ChevronDown,
   Sparkles,
   Search,
-  UserCheck
+  UserCheck,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 const cities = ['Bangalore', 'Delhi', 'Mumbai', 'Kolkata', 'Chennai', 'Hyderabad'];
@@ -26,6 +30,7 @@ const Navbar = () => {
 
   const { isAuthenticated, user, selectedCity } = useSelector((state) => state.auth);
   const { items } = useSelector((state) => state.cart);
+  const { mode } = useSelector((state) => state.theme);
 
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -159,6 +164,27 @@ const Navbar = () => {
                 </Link>
               )}
 
+              {/* Theme Toggle Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  dispatch(toggleTheme());
+                  dispatch(addToast({
+                    message: mode === 'dark' ? 'Switched to Light Theme ☀️' : 'Switched to Dark Theme 🌙',
+                    type: 'info'
+                  }));
+                }}
+                className="p-2.5 rounded-xl bg-surface-100 hover:bg-surface-200 text-surface-700 transition active:scale-95 touch-target border border-surface-200 flex items-center justify-center"
+                title={mode === 'dark' ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
+                aria-label="Toggle dark and light theme"
+              >
+                {mode === 'dark' ? (
+                  <Sun className="w-4 h-4 text-amber-400 rotate-0 transition-transform hover:rotate-90" />
+                ) : (
+                  <Moon className="w-4 h-4 text-brand-600 transition-transform hover:-rotate-12" />
+                )}
+              </button>
+
               {/* Cart Button */}
               <Link
                 to="/cart"
@@ -249,8 +275,26 @@ const Navbar = () => {
               )}
             </nav>
 
-            {/* Mobile Actions: Cart + Hamburger Toggle */}
-            <div className="flex md:hidden items-center space-x-2">
+            {/* Mobile Actions: Theme Toggle + Cart + Hamburger Toggle */}
+            <div className="flex md:hidden items-center space-x-1.5 sm:space-x-2">
+              <button
+                type="button"
+                onClick={() => {
+                  dispatch(toggleTheme());
+                  dispatch(addToast({
+                    message: mode === 'dark' ? 'Switched to Light Theme ☀️' : 'Switched to Dark Theme 🌙',
+                    type: 'info'
+                  }));
+                }}
+                className="p-2.5 rounded-xl bg-surface-100 text-surface-700 hover:bg-surface-200 transition touch-target border border-surface-200"
+                aria-label="Toggle dark and light theme"
+              >
+                {mode === 'dark' ? (
+                  <Sun className="w-5 h-5 text-amber-400" />
+                ) : (
+                  <Moon className="w-5 h-5 text-brand-600" />
+                )}
+              </button>
               <Link
                 to="/cart"
                 className="relative p-2.5 rounded-xl bg-brand-50 text-brand-600 hover:bg-brand-100 transition touch-target"
@@ -295,6 +339,32 @@ const Navbar = () => {
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
+            </div>
+
+            {/* Dark Mode Switcher Row in Mobile Drawer */}
+            <div className="flex items-center justify-between py-2 border-b border-surface-100">
+              <div className="flex items-center space-x-2">
+                {mode === 'dark' ? <Moon className="w-4 h-4 text-brand-500" /> : <Sun className="w-4 h-4 text-amber-500" />}
+                <span className="text-xs font-black text-surface-700">
+                  {mode === 'dark' ? 'Dark Theme' : 'Light Theme'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  dispatch(toggleTheme());
+                  dispatch(addToast({
+                    message: mode === 'dark' ? 'Switched to Light Theme ☀️' : 'Switched to Dark Theme 🌙',
+                    type: 'info'
+                  }));
+                }}
+                className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                  mode === 'dark' ? 'bg-brand-500 justify-end' : 'bg-surface-300 justify-start'
+                }`}
+                aria-label="Toggle theme switch"
+              >
+                <div className="w-4 h-4 rounded-full bg-white shadow-md"></div>
+              </button>
             </div>
 
             <Link

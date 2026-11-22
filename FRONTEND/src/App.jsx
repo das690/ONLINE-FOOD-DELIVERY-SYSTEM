@@ -1,10 +1,12 @@
 import React, { Suspense, lazy, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import MobileBottomNav from './components/MobileBottomNav';
 import RestaurantConflictModal from './components/RestaurantConflictModal';
 import ProtectedRoute from './components/ProtectedRoute';
+import Toast from './components/Toast';
 
 // Lazy-loaded pages for code-splitting (reduces initial bundle by ~40%)
 const Home = lazy(() => import('./pages/Home'));
@@ -42,12 +44,25 @@ function ScrollToTop() {
 }
 
 function App() {
+  const { mode } = useSelector((state) => state.theme);
+
+  useEffect(() => {
+    if (mode === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [mode]);
+
   return (
-    <div className="min-h-screen flex flex-col bg-surface-50 text-surface-900 antialiased selection:bg-brand-500 selection:text-white overflow-x-hidden mesh-gradient">
+    <div className="min-h-screen flex flex-col bg-surface-50 dark:bg-stone-950 text-surface-900 dark:text-stone-100 antialiased selection:bg-brand-500 selection:text-white overflow-x-hidden mesh-gradient">
       <ScrollToTop />
       
       {/* Top Header Navbar */}
       <Navbar />
+
+      {/* Global Toast Alert Notifications */}
+      <Toast />
 
       {/* Main Content Area */}
       <main className="flex-grow">

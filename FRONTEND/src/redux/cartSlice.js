@@ -27,7 +27,8 @@ const recalculateTotals = (state) => {
     state.discount = 0;
   }
 
-  state.totalAmount = Math.max(0, state.subtotal + state.deliveryFee + state.tax - state.discount);
+  const tipAmount = Math.max(0, Number(state.tip || 0));
+  state.totalAmount = Math.max(0, state.subtotal + state.deliveryFee + state.tax - state.discount + tipAmount);
 
   // Save to localStorage
   try {
@@ -35,7 +36,9 @@ const recalculateTotals = (state) => {
       items: state.items,
       restaurantId: state.restaurantId,
       restaurantName: state.restaurantName,
-      appliedCoupon: state.appliedCoupon
+      appliedCoupon: state.appliedCoupon,
+      tip: state.tip,
+      deliveryPreferences: state.deliveryPreferences
     }));
   } catch (e) {
     // Ignore storage errors
@@ -50,6 +53,13 @@ const initialState = {
   deliveryFee: 40,
   tax: 0,
   discount: 0,
+  tip: savedCart?.tip || 0,
+  deliveryPreferences: savedCart?.deliveryPreferences || {
+    noCutlery: false,
+    contactless: false,
+    dontRingBell: false,
+    dropAtSecurity: false
+  },
   totalAmount: 0,
   appliedCoupon: savedCart?.appliedCoupon || null,
   conflictPending: null, // Holds item details if restaurant mismatch occurs
@@ -125,9 +135,27 @@ const cartSlice = createSlice({
       state.restaurantId = null;
       state.restaurantName = '';
       state.appliedCoupon = null;
+      state.tip = 0;
+      state.deliveryPreferences = {
+        noCutlery: false,
+        contactless: false,
+        dontRingBell: false,
+        dropAtSecurity: false
+      };
       state.conflictPending = null;
       recalculateTotals(state);
       localStorage.removeItem('cart');
+    },
+    setTip: (state, action) => {
+      state.tip = Math.max(0, Number(action.payload) || 0);
+      recalculateTotals(state);
+    },
+    setDeliveryPreferences: (state, action) => {
+      state.deliveryPreferences = {
+        ...state.deliveryPreferences,
+        ...action.payload
+      };
+      recalculateTotals(state);
     },
     applyCoupon: (state, action) => {
       state.appliedCoupon = action.payload; // { code, discountPercent, maxDiscount, discountAmount }
@@ -169,6 +197,8 @@ export const {
   clearCart,
   applyCoupon,
   removeCoupon,
+  setTip,
+  setDeliveryPreferences,
   resolveConflictAndAdd,
   dismissConflict
 } = cartSlice.actions;

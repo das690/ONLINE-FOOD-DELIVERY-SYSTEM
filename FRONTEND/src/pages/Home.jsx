@@ -103,7 +103,7 @@ const Home = () => {
           </p>
 
           {/* Search Box Capsule */}
-          <div className="bg-white rounded-2xl p-2 sm:p-2.5 shadow-2xl flex items-center text-surface-800 border border-white/50 focus-within:ring-4 focus-within:ring-brand-400/30 transition-all">
+          <div className="bg-white dark:bg-stone-900 rounded-2xl p-2 sm:p-2.5 shadow-2xl flex items-center text-surface-800 dark:text-stone-100 border border-white/50 dark:border-stone-700 focus-within:ring-4 focus-within:ring-brand-400/30 transition-all">
             <div className="pl-3 pr-2 text-brand-500 shrink-0">
               <Search className="w-5 h-5" />
             </div>
@@ -112,7 +112,7 @@ const Home = () => {
               placeholder="Search for biryani, pizza, rolls, or restaurants..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 py-2 px-2 text-xs sm:text-sm md:text-base outline-none text-surface-900 placeholder-surface-400 font-bold bg-transparent"
+              className="flex-1 py-2 px-2 text-xs sm:text-sm md:text-base outline-none text-surface-900 dark:text-stone-100 placeholder-surface-400 dark:placeholder-stone-400 font-bold bg-transparent"
             />
             {searchTerm && (
               <button
@@ -179,36 +179,36 @@ const Home = () => {
 
       {/* Promotional Value Banners */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
-        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-brand-50 to-amber-50 border border-brand-200/60 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
+        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-brand-50 to-amber-50 dark:from-stone-900 dark:to-stone-850 border border-brand-200/60 dark:border-stone-800 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
           <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-brand-600 to-amber-500 text-white flex items-center justify-center font-black text-xl shadow-md shrink-0">
             %
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-brand-600">Promo Code</span>
-            <h4 className="font-black text-surface-900 text-sm sm:text-base">UP TO 50% OFF</h4>
-            <p className="text-xs text-surface-500 mt-0.5">Apply WELCOME50 on checkout</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-brand-600 dark:text-brand-400">Promo Code</span>
+            <h4 className="font-black text-surface-900 dark:text-white text-sm sm:text-base">UP TO 50% OFF</h4>
+            <p className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Apply WELCOME50 on checkout</p>
           </div>
         </div>
 
-        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/60 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
+        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-stone-900 dark:to-stone-850 border border-emerald-200/60 dark:border-stone-800 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
           <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black shadow-md shrink-0">
             <Clock className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600">Live GPS</span>
-            <h4 className="font-black text-surface-900 text-sm sm:text-base">30-MIN DELIVERY</h4>
-            <p className="text-xs text-surface-500 mt-0.5">Real-time driver location radar</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Live GPS</span>
+            <h4 className="font-black text-surface-900 dark:text-white text-sm sm:text-base">30-MIN DELIVERY</h4>
+            <p className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">Real-time driver location radar</p>
           </div>
         </div>
 
-        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200/60 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
+        <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-stone-900 dark:to-stone-850 border border-purple-200/60 dark:border-stone-800 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
           <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-500 text-white flex items-center justify-center font-black shadow-md shrink-0">
             <Award className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-[10px] font-black uppercase tracking-wider text-purple-600">Verified Kitchens</span>
-            <h4 className="font-black text-surface-900 text-sm sm:text-base">GOURMET CHEF PICKS</h4>
-            <p className="text-xs text-surface-500 mt-0.5">100% hygiene and safety audited</p>
+            <span className="text-[10px] font-black uppercase tracking-wider text-purple-600 dark:text-purple-400">Verified Kitchens</span>
+            <h4 className="font-black text-surface-900 dark:text-white text-sm sm:text-base">GOURMET CHEF PICKS</h4>
+            <p className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">100% hygiene and safety audited</p>
           </div>
         </div>
       </div>
