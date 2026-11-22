@@ -16,6 +16,15 @@ exports.addReview = async (req, res) => {
       return res.status(404).json({ message: 'Restaurant not found' });
     }
 
+    // Prevent duplicate reviews from the same user for the same restaurant
+    const existingReview = await Review.findOne({
+      user: req.user._id,
+      restaurant: restaurantId
+    });
+    if (existingReview) {
+      return res.status(400).json({ message: 'You have already reviewed this restaurant. You can only submit one review per restaurant.' });
+    }
+
     const review = new Review({
       user: req.user._id,
       userName: req.user.name,

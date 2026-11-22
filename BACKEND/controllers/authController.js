@@ -344,12 +344,18 @@ exports.forgotPassword = async (req, res) => {
       html: message
     });
 
-    res.status(200).json({
+    const responseData = {
       message: 'Password reset link sent to your email',
-      resetToken, // Provided for easy development & testing convenience
-      resetUrl,
       emailSent: emailResult.success
-    });
+    };
+
+    // Only expose token in development for testing convenience
+    if (process.env.NODE_ENV !== 'production') {
+      responseData.resetToken = resetToken;
+      responseData.resetUrl = resetUrl;
+    }
+
+    res.status(200).json(responseData);
   } catch (error) {
     res.status(500).json({ message: 'Failed to process forgot password', error: error.message });
   }
