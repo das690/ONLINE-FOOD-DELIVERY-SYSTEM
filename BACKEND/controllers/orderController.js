@@ -339,9 +339,9 @@ exports.updateDeliveryLocation = async (req, res) => {
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
     order.deliveryCoordinates = {
-      lat: lat || order.deliveryCoordinates.lat,
-      lng: lng || order.deliveryCoordinates.lng,
-      progressPercent: progressPercent !== undefined ? progressPercent : order.deliveryCoordinates.progressPercent
+      lat: lat || (order.deliveryCoordinates ? order.deliveryCoordinates.lat : 12.9716),
+      lng: lng || (order.deliveryCoordinates ? order.deliveryCoordinates.lng : 77.5946),
+      progressPercent: progressPercent !== undefined ? progressPercent : (order.deliveryCoordinates ? order.deliveryCoordinates.progressPercent : 20)
     };
 
     await order.save();

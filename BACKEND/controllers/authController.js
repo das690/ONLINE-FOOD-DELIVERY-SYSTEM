@@ -68,7 +68,9 @@ exports.register = async (req, res) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
-        avatar: user.avatar
+        avatar: user.avatar,
+        favorites: user.favorites || [],
+        savedAddresses: user.savedAddresses || []
       }
     });
   } catch (error) {
@@ -109,7 +111,9 @@ exports.login = async (req, res) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
-        avatar: user.avatar
+        avatar: user.avatar,
+        favorites: user.favorites || [],
+        savedAddresses: user.savedAddresses || []
       }
     });
   } catch (error) {
@@ -170,7 +174,9 @@ exports.demoLogin = async (req, res) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
-        avatar: user.avatar
+        avatar: user.avatar,
+        favorites: user.favorites || [],
+        savedAddresses: user.savedAddresses || []
       }
     });
   } catch (error) {
@@ -285,7 +291,7 @@ exports.toggleFavorite = async (req, res) => {
     const user = await User.findById(req.user._id);
     const restId = req.params.restaurantId;
 
-    const existsIndex = user.favorites.indexOf(restId);
+    const existsIndex = user.favorites.findIndex(f => f.toString() === restId.toString());
     let isFavorite = false;
 
     if (existsIndex > -1) {

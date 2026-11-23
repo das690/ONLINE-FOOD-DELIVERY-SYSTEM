@@ -77,7 +77,7 @@ const Navbar = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-xl border-b border-surface-200/80 shadow-xs transition-all duration-300">
+      <header className="sticky top-0 z-40 bg-white/85 dark:bg-stone-900/85 backdrop-blur-xl border-b border-surface-200/80 dark:border-stone-800 shadow-xs transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Left: Brand Logo & Location Picker */}
@@ -321,7 +321,7 @@ const Navbar = () => {
 
         {/* Mobile Slide-down Drawer */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-surface-200/90 bg-white/95 backdrop-blur-2xl px-5 pt-4 pb-8 space-y-4 animate-slideDown shadow-2xl">
+          <div className="md:hidden border-t border-surface-200/90 dark:border-stone-800 bg-white/95 dark:bg-stone-900/95 backdrop-blur-2xl px-5 pt-4 pb-8 space-y-4 animate-slideDown shadow-2xl">
             {/* City Selector on Mobile */}
             <div className="flex items-center justify-between pb-3.5 border-b border-surface-100">
               <div className="flex items-center space-x-2">

@@ -64,7 +64,10 @@ const Dashboard = () => {
     try {
       if (isOwnerOrAdmin) {
         const allR = await api.get('/restaurants');
-        const store = allR.data.find(r => r.owner === user._id) || allR.data[0];
+        const store = allR.data.find(r => {
+          const ownerId = typeof r.owner === 'object' && r.owner !== null ? r.owner._id : r.owner;
+          return ownerId && user?._id && ownerId.toString() === user._id.toString();
+        }) || allR.data[0];
         setMyRestaurant(store);
 
         if (store) {

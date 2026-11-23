@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { Search, MapPin, Sparkles, Flame, Clock, Award, X, Utensils, Zap, TrendingUp } from 'lucide-react';
 import api from '../utils/api';
@@ -24,10 +24,11 @@ const Home = () => {
     sort: 'relevance'
   });
 
-  const fetchRestaurants = async () => {
+  const fetchRestaurants = useCallback(async () => {
     setLoading(true);
     try {
       const params = {};
+      if (selectedCity && selectedCity !== 'All') params.location = selectedCity;
       if (searchTerm) params.search = searchTerm;
       if (activeCategory && activeCategory !== 'All') params.cuisine = activeCategory;
       if (filters.minRating > 0) params.minRating = filters.minRating;
@@ -43,11 +44,11 @@ const Home = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedCity, searchTerm, activeCategory, filters]);
 
   useEffect(() => {
     fetchRestaurants();
-  }, [selectedCity, activeCategory, filters.vegOnly, filters.minRating, filters.sort]);
+  }, [selectedCity, activeCategory, filters.vegOnly, filters.minRating, filters.sort, fetchRestaurants]);
 
   // Client-side debounce for search input
   useEffect(() => {
@@ -56,7 +57,7 @@ const Home = () => {
     }, 350);
 
     return () => clearTimeout(delayDebounce);
-  }, [searchTerm]);
+  }, [searchTerm, fetchRestaurants]);
 
   const handleResetFilters = () => {
     setFilters({

@@ -42,7 +42,7 @@ class ErrorBoundary extends React.Component {
               <RefreshCw className="w-4 h-4" />
               <span>Back to Home</span>
             </button>
-            {process.env.NODE_ENV !== 'production' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="mt-6 text-left bg-surface-100 rounded-xl p-4 text-xs text-surface-600 overflow-auto max-h-48">
                 <summary className="cursor-pointer font-bold text-surface-700 mb-2">Error Details</summary>
                 <pre className="whitespace-pre-wrap">{this.state.error.toString()}</pre>

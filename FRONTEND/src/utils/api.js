@@ -1,7 +1,12 @@
 import axios from 'axios';
 
+// Normalize baseURL so that /api is always present whether or not VITE_API_URL includes it
+const rawBaseURL = import.meta.env.VITE_API_URL || 'https://online-food-delivery-system-i0ik.onrender.com';
+const cleanBaseURL = rawBaseURL.replace(/\/+$/, '');
+const baseURL = cleanBaseURL.endsWith('/api') ? cleanBaseURL : `${cleanBaseURL}/api`;
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://online-food-delivery-system-i0ik.onrender.com',
+  baseURL,
 });
 
 // Request interceptor to attach JWT token

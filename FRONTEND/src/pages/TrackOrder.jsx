@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { io } from 'socket.io-client';
 import api from '../utils/api';
+import { getSocket } from '../utils/socket';
 import LiveMapSimulator from '../components/LiveMapSimulator';
 import InvoiceModal from '../components/InvoiceModal';
 import { addToast } from '../redux/uiSlice';
@@ -79,13 +79,12 @@ const TrackOrder = () => {
     };
     fetchOrder();
 
-    const socketServerUrl = import.meta.env.VITE_SOCKET_URL || 'https://online-food-delivery-system-i0ik.onrender.com';
-    const socketInstance = io(socketServerUrl);
+    const socketInstance = getSocket();
     setSocket(socketInstance);
 
     socketInstance.emit('joinOrderRoom', orderId);
 
-    socketInstance.on('statusUpdate', (data) => {
+    const handleStatusUpdate = (data) => {
       if (data.status) {
         setCurrentStatus(data.status);
         setOrder((prev) => (prev ? { ...prev, status: data.status } : prev));
@@ -94,12 +93,15 @@ const TrackOrder = () => {
           type: data.status === 'Delivered' ? 'success' : 'info'
         }));
       }
-    });
+    };
+
+    socketInstance.on('statusUpdate', handleStatusUpdate);
 
     return () => {
-      socketInstance.disconnect();
+      socketInstance.off('statusUpdate', handleStatusUpdate);
+      socketInstance.emit('leaveOrderRoom', orderId);
     };
-  }, [orderId]);
+  }, [orderId, dispatch]);
 
   const handleCancelOrder = async () => {
     if (!window.confirm('Are you sure you want to cancel this order?')) return;

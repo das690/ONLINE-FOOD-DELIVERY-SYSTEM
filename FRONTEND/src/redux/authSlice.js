@@ -18,7 +18,7 @@ const initialState = {
   user: userFromStorage,
   token: tokenFromStorage,
   isAuthenticated: !!tokenFromStorage,
-  favorites: [],
+  favorites: (userFromStorage?.favorites || []).map(f => typeof f === 'object' && f !== null ? f._id : f),
   savedAddresses: userFromStorage?.savedAddresses || [],
   selectedCity: localStorage.getItem('selectedCity') || 'Bangalore',
 };
@@ -32,6 +32,7 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       state.isAuthenticated = true;
       state.savedAddresses = action.payload.user?.savedAddresses || [];
+      state.favorites = (action.payload.user?.favorites || []).map(f => typeof f === 'object' && f !== null ? f._id : f);
       localStorage.setItem('user', JSON.stringify(action.payload.user));
       localStorage.setItem('token', action.payload.token);
     },

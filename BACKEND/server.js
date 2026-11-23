@@ -5,7 +5,8 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const http = require('http');
 const { Server } = require('socket.io');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const server = http.createServer(app);
@@ -119,6 +120,18 @@ io.on('connection', (socket) => {
     });
   });
 
+  // Leave order room
+  socket.on('leaveOrderRoom', (orderId) => {
+    socket.leave(`order_${orderId}`);
+    console.log(`Socket ${socket.id} left order room: order_${orderId}`);
+  });
+
+  // Leave restaurant room
+  socket.on('leaveRestaurantRoom', (restaurantId) => {
+    socket.leave(`restaurant_${restaurantId}`);
+    console.log(`Socket ${socket.id} left restaurant room: restaurant_${restaurantId}`);
+  });
+
   socket.on('disconnect', () => {
     console.log(`Socket Client Disconnected: ${socket.id}`);
   });
@@ -156,3 +169,5 @@ mongoose.connect(process.env.MONGO_URI)
     console.error('Database connection failed:', err.message);
     process.exit(1);
   });
+
+module.exports = { app, server };
