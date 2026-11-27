@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { addToast } from '../redux/uiSlice';
 import {
   Star,
   Clock,
@@ -39,7 +40,7 @@ const RestaurantDetails = () => {
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSuccess, setReviewSuccess] = useState('');
 
-  const fetchRestaurant = async () => {
+  const fetchRestaurant = useCallback(async () => {
     try {
       const response = await api.get(`/restaurants/${id}`);
       setRestaurant(response.data);
@@ -49,17 +50,17 @@ const RestaurantDetails = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchRestaurant();
     window.scrollTo(0, 0);
-  }, [id]);
+  }, [fetchRestaurant]);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      alert('Please login to write a review');
+      dispatch(addToast({ message: 'Please login to write a review', type: 'warning' }));
       return;
     }
     if (!reviewComment.trim()) return;
@@ -80,7 +81,10 @@ const RestaurantDetails = () => {
         setReviewSuccess('');
       }, 1500);
     } catch (err) {
-      alert(err.response?.data?.message || 'Failed to submit review');
+      dispatch(addToast({
+        message: err.response?.data?.message || 'Failed to submit review',
+        type: 'error'
+      }));
     } finally {
       setReviewSubmitting(false);
     }
@@ -235,11 +239,10 @@ const RestaurantDetails = () => {
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap transition-all duration-200 touch-target ${
-                selectedCategory === cat
-                  ? 'bg-brand-500 text-white shadow-sm shadow-brand-500/25 scale-102'
+              className={`px-4 py-2 rounded-full text-xs font-black whitespace-nowrap transition-all duration-200 touch-target ${selectedCategory === cat
+                  ? 'bg-brand-500 text-white shadow-sm shadow-brand-500/25 scale-[1.02]'
                   : 'bg-surface-100 text-surface-600 hover:bg-surface-200'
-              }`}
+                }`}
             >
               {cat}
             </button>
@@ -372,11 +375,10 @@ const RestaurantDetails = () => {
                         className="p-1 focus:outline-none touch-target"
                       >
                         <Star
-                          className={`w-7 h-7 transition-colors ${
-                            star <= reviewRating
+                          className={`w-7 h-7 transition-colors ${star <= reviewRating
                               ? 'fill-amber-400 text-amber-400'
                               : 'text-surface-200'
-                          }`}
+                            }`}
                         />
                       </button>
                     ))}

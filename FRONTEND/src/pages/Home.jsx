@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Search, MapPin, Sparkles, Flame, Clock, Award, X, Utensils, Zap, TrendingUp } from 'lucide-react';
 import api from '../utils/api';
@@ -46,15 +46,18 @@ const Home = () => {
     }
   }, [selectedCity, searchTerm, activeCategory, filters]);
 
-  useEffect(() => {
-    fetchRestaurants();
-  }, [selectedCity, activeCategory, filters.vegOnly, filters.minRating, filters.sort, fetchRestaurants]);
+  const isFirstRender = useRef(true);
 
-  // Client-side debounce for search input
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      fetchRestaurants();
+      return;
+    }
+
     const delayDebounce = setTimeout(() => {
       fetchRestaurants();
-    }, 350);
+    }, searchTerm ? 350 : 0);
 
     return () => clearTimeout(delayDebounce);
   }, [searchTerm, fetchRestaurants]);
@@ -181,7 +184,7 @@ const Home = () => {
       {/* Promotional Value Banners */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
         <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-brand-50 to-amber-50 dark:from-stone-900 dark:to-stone-850 border border-brand-200/60 dark:border-stone-800 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-brand-600 to-amber-500 text-white flex items-center justify-center font-black text-xl shadow-md shrink-0">
+          <div className="w-[3.25rem] h-[3.25rem] rounded-2xl bg-gradient-to-tr from-brand-600 to-amber-500 text-white flex items-center justify-center font-black text-xl shadow-md shrink-0">
             %
           </div>
           <div>
@@ -192,7 +195,7 @@ const Home = () => {
         </div>
 
         <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-stone-900 dark:to-stone-850 border border-emerald-200/60 dark:border-stone-800 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black shadow-md shrink-0">
+          <div className="w-[3.25rem] h-[3.25rem] rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-500 text-white flex items-center justify-center font-black shadow-md shrink-0">
             <Clock className="w-6 h-6" />
           </div>
           <div>
@@ -203,7 +206,7 @@ const Home = () => {
         </div>
 
         <div className="rounded-3xl p-5 sm:p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-stone-900 dark:to-stone-850 border border-purple-200/60 dark:border-stone-800 shadow-xs flex items-center space-x-4 hover:shadow-md transition">
-          <div className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-500 text-white flex items-center justify-center font-black shadow-md shrink-0">
+          <div className="w-[3.25rem] h-[3.25rem] rounded-2xl bg-gradient-to-tr from-purple-600 to-pink-500 text-white flex items-center justify-center font-black shadow-md shrink-0">
             <Award className="w-6 h-6" />
           </div>
           <div>

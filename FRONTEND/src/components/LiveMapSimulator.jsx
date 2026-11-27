@@ -14,10 +14,10 @@ const LiveMapSimulator = ({ order, currentStatus, socket }) => {
   useEffect(() => {
     if (currentStatus === 'Delivered') {
       setProgress(100);
-    } else if (currentStatus === 'Out for Delivery' && progress < 40) {
-      setProgress(60);
-    } else if (currentStatus === 'Preparing' && progress < 20) {
-      setProgress(25);
+    } else if (currentStatus === 'Out for Delivery') {
+      setProgress((prev) => (prev < 40 ? 60 : prev));
+    } else if (currentStatus === 'Preparing') {
+      setProgress((prev) => (prev < 20 ? 25 : prev));
     }
   }, [currentStatus]);
 

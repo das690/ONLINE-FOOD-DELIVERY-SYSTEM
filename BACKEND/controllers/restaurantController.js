@@ -1,6 +1,8 @@
 const Restaurant = require('../models/Restaurant');
 const Review = require('../models/Review');
 
+const escapeRegex = (str = '') => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // @desc    Get all restaurants with filters, search, sort
 // @route   GET /api/restaurants
 exports.getRestaurants = async (req, res) => {
@@ -9,20 +11,21 @@ exports.getRestaurants = async (req, res) => {
     const query = {};
 
     if (search) {
+      const safeSearch = escapeRegex(search);
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { cuisine: { $regex: search, $options: 'i' } },
-        { location: { $regex: search, $options: 'i' } },
-        { 'menu.name': { $regex: search, $options: 'i' } }
+        { name: { $regex: safeSearch, $options: 'i' } },
+        { cuisine: { $regex: safeSearch, $options: 'i' } },
+        { location: { $regex: safeSearch, $options: 'i' } },
+        { 'menu.name': { $regex: safeSearch, $options: 'i' } }
       ];
     }
 
     if (cuisine && cuisine !== 'All') {
-      query.cuisine = { $in: [new RegExp(cuisine, 'i')] };
+      query.cuisine = { $in: [new RegExp(escapeRegex(cuisine), 'i')] };
     }
 
     if (location && location !== 'All') {
-      query.location = { $regex: location, $options: 'i' };
+      query.location = { $regex: escapeRegex(location), $options: 'i' };
     }
 
     if (minRating) {
@@ -150,7 +153,16 @@ exports.updateRestaurant = async (req, res) => {
       return res.status(403).json({ message: 'You do not have permission to edit this restaurant' });
     }
 
-    Object.assign(restaurant, req.body);
+    const allowedFields = [
+      'name', 'description', 'location', 'address', 'cuisine',
+      'deliveryTime', 'minimumOrder', 'priceForTwo', 'discountText',
+      'hoursOfOperation', 'imageUrl', 'isOpen'
+    ];
+    for (const field of allowedFields) {
+      if (req.body[field] !== undefined) {
+        restaurant[field] = req.body[field];
+      }
+    }
     const updated = await restaurant.save();
     res.status(200).json(updated);
   } catch (error) {
@@ -224,7 +236,15 @@ exports.updateMenuItem = async (req, res) => {
     const item = restaurant.menu.id(req.params.itemId);
     if (!item) return res.status(404).json({ message: 'Menu item not found' });
 
-    Object.assign(item, req.body);
+    const allowedItemFields = [
+      'name', 'description', 'price', 'category',
+      'nutritionalInfo', 'image', 'isVeg', 'isBestseller', 'isAvailable'
+    ];
+    for (const field of allowedItemFields) {
+      if (req.body[field] !== undefined) {
+        item[field] = field === 'price' ? Number(req.body[field]) : req.body[field];
+      }
+    }
     await restaurant.save();
 
     res.status(200).json(restaurant);

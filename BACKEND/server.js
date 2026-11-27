@@ -32,6 +32,9 @@ const io = new Server(server, {
 // Attach socket.io to express app for access in controllers
 app.set('io', io);
 
+// Trust proxy for rate limiting behind Render/Heroku/Nginx
+app.set('trust proxy', 1);
+
 // ==========================================
 // Security & Middleware
 // ==========================================
@@ -60,8 +63,27 @@ app.use(globalLimiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Trust proxy for rate limiting behind Render/Heroku/Nginx
-app.set('trust proxy', 1);
+// Express 5-safe NoSQL injection sanitizer for req.body & req.params
+const sanitizeObject = (obj) => {
+  if (!obj || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) {
+    return obj.map(sanitizeObject);
+  }
+  for (const key of Object.keys(obj)) {
+    if (key.startsWith('$') || key.includes('.')) {
+      delete obj[key];
+    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+      sanitizeObject(obj[key]);
+    }
+  }
+  return obj;
+};
+
+app.use((req, res, next) => {
+  if (req.body) sanitizeObject(req.body);
+  if (req.params) sanitizeObject(req.params);
+  next();
+});
 
 // ==========================================
 // API Routes

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import api from '../utils/api';
 import { getSocket } from '../utils/socket';
@@ -34,7 +34,6 @@ const steps = [
 
 const TrackOrder = () => {
   const { orderId } = useParams();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [order, setOrder] = useState(null);
@@ -42,6 +41,7 @@ const TrackOrder = () => {
   const [loading, setLoading] = useState(true);
   const [socket, setSocket] = useState(null);
   const [cancelling, setCancelling] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(24 * 60);
 
@@ -104,15 +104,15 @@ const TrackOrder = () => {
   }, [orderId, dispatch]);
 
   const handleCancelOrder = async () => {
-    if (!window.confirm('Are you sure you want to cancel this order?')) return;
     setCancelling(true);
     try {
       await api.put(`/orders/${orderId}/cancel`, { reason: 'Customer requested cancellation' });
       setCurrentStatus('Cancelled');
       setOrder((prev) => (prev ? { ...prev, status: 'Cancelled' } : prev));
-      alert('Order cancelled successfully.');
+      setShowCancelConfirm(false);
+      dispatch(addToast({ message: 'Order cancelled successfully.', type: 'info' }));
     } catch (err) {
-      alert(err.response?.data?.message || 'Could not cancel order');
+      dispatch(addToast({ message: err.response?.data?.message || 'Could not cancel order', type: 'error' }));
     } finally {
       setCancelling(false);
     }
@@ -169,7 +169,7 @@ const TrackOrder = () => {
           {(currentStatus === 'Pending' || currentStatus === 'Confirmed') && (
             <button
               type="button"
-              onClick={handleCancelOrder}
+              onClick={() => setShowCancelConfirm(true)}
               disabled={cancelling}
               className="text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3.5 py-2 rounded-xl transition flex items-center space-x-1.5 touch-target"
             >
@@ -445,6 +445,41 @@ const TrackOrder = () => {
         isOpen={isInvoiceOpen}
         onClose={() => setIsInvoiceOpen(false)}
       />
+
+      {/* Cancel Confirmation Modal */}
+      {showCancelConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fadeIn">
+          <div className="bg-white dark:bg-stone-900 rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-surface-200 dark:border-stone-800 animate-scaleIn">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center shrink-0">
+                <XCircle className="w-5 h-5" />
+              </div>
+              <h3 className="text-lg font-black text-surface-900 dark:text-white">Cancel Order?</h3>
+            </div>
+            <p className="text-xs sm:text-sm text-surface-600 dark:text-stone-400 mb-6 leading-relaxed">
+              Are you sure you want to cancel order #{order._id.slice(-6).toUpperCase()}? This action cannot be undone.
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowCancelConfirm(false)}
+                disabled={cancelling}
+                className="flex-1 py-2.5 px-4 rounded-xl border border-surface-200 dark:border-stone-700 font-bold text-xs text-surface-700 dark:text-stone-200 hover:bg-surface-50 dark:hover:bg-stone-800 transition touch-target"
+              >
+                Keep Order
+              </button>
+              <button
+                type="button"
+                onClick={handleCancelOrder}
+                disabled={cancelling}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition shadow-md touch-target disabled:opacity-50"
+              >
+                {cancelling ? 'Cancelling...' : 'Yes, Cancel'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

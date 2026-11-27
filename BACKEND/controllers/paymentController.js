@@ -2,16 +2,24 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Order = require('../models/Order');
 
-// Initialize Razorpay instance
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID || 'rzp_test_TvD1fU6ZsxKH8f',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || 'PmEs1D7j1MyvJbK2yrXV9kO6'
-});
+// Initialize Razorpay instance lazily/safely from env vars
+const getRazorpayInstance = () => {
+  if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+    return null;
+  }
+  return new Razorpay({
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET
+  });
+};
 
 // @desc    Get Razorpay Public Key
 // @route   GET /api/payments/key
 exports.getRazorpayKey = (req, res) => {
-  res.status(200).json({ key: process.env.RAZORPAY_KEY_ID || 'rzp_test_TvD1fU6ZsxKH8f' });
+  if (!process.env.RAZORPAY_KEY_ID) {
+    return res.status(503).json({ message: 'Payment gateway key not configured' });
+  }
+  res.status(200).json({ key: process.env.RAZORPAY_KEY_ID });
 };
 
 // @desc    Create Razorpay Order
@@ -41,6 +49,10 @@ exports.createPaymentOrder = async (req, res) => {
     };
 
     try {
+      const razorpay = getRazorpayInstance();
+      if (!razorpay) {
+        throw new Error('Razorpay credentials not configured');
+      }
       const razorpayOrder = await razorpay.orders.create(options);
       order.paymentDetails.razorpayOrderId = razorpayOrder.id;
       await order.save();
@@ -48,11 +60,15 @@ exports.createPaymentOrder = async (req, res) => {
       return res.status(200).json({
         success: true,
         order: razorpayOrder,
-        key: process.env.RAZORPAY_KEY_ID || 'rzp_test_TvD1fU6ZsxKH8f'
+        key: process.env.RAZORPAY_KEY_ID
       });
     } catch (rzpErr) {
+      if (process.env.NODE_ENV === 'production') {
+        console.error('Razorpay API error in production:', rzpErr.message);
+        return res.status(502).json({ message: 'Payment gateway unavailable. Please try again later.' });
+      }
       console.warn('Razorpay API error, falling back to simulated order:', rzpErr.message);
-      // Fallback for offline/test simulation
+      // Fallback for offline/test simulation in non-production
       const mockOrder = {
         id: `order_mock_${Date.now()}`,
         amount: amountInPaise,
@@ -65,7 +81,7 @@ exports.createPaymentOrder = async (req, res) => {
       return res.status(200).json({
         success: true,
         order: mockOrder,
-        key: process.env.RAZORPAY_KEY_ID || 'rzp_test_TvD1fU6ZsxKH8f',
+        key: process.env.RAZORPAY_KEY_ID || '',
         isSimulated: true
       });
     }
@@ -93,6 +109,9 @@ exports.verifyPayment = async (req, res) => {
     }
 
     if (isSimulated) {
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(403).json({ success: false, message: 'Simulated payments are disabled in production' });
+      }
       order.paymentStatus = 'Completed';
       order.status = 'Confirmed';
       order.paymentDetails.razorpayPaymentId = razorpay_payment_id || `pay_mock_${Date.now()}`;
@@ -113,7 +132,13 @@ exports.verifyPayment = async (req, res) => {
     }
 
     // Real signature verification
-    const secret = process.env.RAZORPAY_KEY_SECRET || 'PmEs1D7j1MyvJbK2yrXV9kO6';
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    if (!secret) {
+      return res.status(500).json({ success: false, message: 'Payment gateway secret is not configured' });
+    }
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ success: false, message: 'Missing payment verification parameters' });
+    }
     const body = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSignature = crypto
       .createHmac('sha256', secret)

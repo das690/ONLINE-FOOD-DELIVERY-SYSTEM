@@ -68,7 +68,7 @@ const Checkout = () => {
   const handleAddNewAddress = async (e) => {
     e.preventDefault();
     if (!newAddress.street || !newAddress.city) {
-      alert('Please fill in street and city');
+      dispatch(addToast({ message: 'Please fill in street and city', type: 'warning' }));
       return;
     }
 
@@ -78,8 +78,9 @@ const Checkout = () => {
       dispatch(setSavedAddresses(response.data));
       setSelectedAddressIndex(response.data.length - 1);
       setShowNewAddressForm(false);
+      dispatch(addToast({ message: 'Delivery address saved!', type: 'success' }));
     } catch (err) {
-      alert('Failed to save address');
+      dispatch(addToast({ message: err.response?.data?.message || 'Failed to save address', type: 'error' }));
     }
   };
 
@@ -88,7 +89,7 @@ const Checkout = () => {
     setError('');
 
     // Determine delivery address
-    let activeAddress = null;
+    let activeAddress;
     if (savedAddressesList.length > 0 && selectedAddressIndex >= 0) {
       activeAddress = savedAddressesList[selectedAddressIndex];
     } else if (newAddress.street) {
@@ -151,7 +152,7 @@ const Checkout = () => {
 
         const { order: rzpOrder, key, isSimulated } = paymentRes.data;
 
-        if (isSimulated || typeof window.Razorpay === 'undefined') {
+        if (isSimulated || typeof window.Razorpay === 'undefined' || !key) {
           await api.post('/payments/verify', {
             orderId: createdOrder._id,
             isSimulated: true,
@@ -165,7 +166,7 @@ const Checkout = () => {
         }
 
         const options = {
-          key: key || 'rzp_test_TvD1fU6ZsxKH8f',
+          key,
           amount: rzpOrder.amount,
           currency: rzpOrder.currency,
           name: 'FoodExpress Delivery',

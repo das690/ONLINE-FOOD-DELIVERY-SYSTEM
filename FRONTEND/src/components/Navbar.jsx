@@ -267,7 +267,7 @@ const Navbar = () => {
                   </Link>
                   <Link
                     to="/register"
-                    className="bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-sm px-4.5 py-2.5 rounded-xl shadow-md shadow-brand-500/25 transition active:scale-95"
+                    className="bg-brand-500 hover:bg-brand-600 text-white font-extrabold text-sm px-[1.125rem] py-2.5 rounded-xl shadow-md shadow-brand-500/25 transition active:scale-95"
                   >
                     Sign Up
                   </Link>

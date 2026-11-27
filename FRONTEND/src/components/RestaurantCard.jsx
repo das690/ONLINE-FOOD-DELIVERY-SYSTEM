@@ -18,7 +18,10 @@ const RestaurantCard = ({ restaurant }) => {
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      alert('Please log in to save favorite restaurants');
+      dispatch(addToast({
+        message: 'Please log in to save favorite restaurants',
+        type: 'warning'
+      }));
       return;
     }
 
@@ -46,7 +49,7 @@ const RestaurantCard = ({ restaurant }) => {
           <img
             src={restaurant.imageUrl || defaultImage}
             alt={restaurant.name}
-            className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 ease-out"
+            className="w-full h-full object-cover group-hover:scale-[1.08] transition-transform duration-500 ease-out"
             loading="lazy"
           />
 

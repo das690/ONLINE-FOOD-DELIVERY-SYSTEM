@@ -5,9 +5,12 @@ const crypto = require('crypto');
 const sendEmail = require('../utils/sendEmail');
 
 const generateToken = (user) => {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is not configured');
+  }
   return jwt.sign(
     { id: user._id, role: user.role },
-    process.env.JWT_SECRET || 'secret123',
+    process.env.JWT_SECRET,
     { expiresIn: '7d' }
   );
 };

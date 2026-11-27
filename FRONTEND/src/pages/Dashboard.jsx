@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { addToCart } from '../redux/cartSlice';
 import { updateUserProfile, setSavedAddresses } from '../redux/authSlice';
+import { addToast } from '../redux/uiSlice';
 import api from '../utils/api';
 import InvoiceModal from '../components/InvoiceModal';
 import {
@@ -59,7 +60,7 @@ const Dashboard = () => {
   const isOwnerOrAdmin = user?.role === 'restaurant_owner' || user?.role === 'admin';
 
   // Fetch orders based on role
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async () => {
     setLoadingOrders(true);
     try {
       if (isOwnerOrAdmin) {
@@ -86,7 +87,7 @@ const Dashboard = () => {
     } finally {
       setLoadingOrders(false);
     }
-  };
+  }, [isOwnerOrAdmin, user?._id]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -94,15 +95,16 @@ const Dashboard = () => {
       return;
     }
     fetchOrders();
-  }, [isAuthenticated, user?.role]);
+  }, [isAuthenticated, navigate, fetchOrders]);
 
   // Update order status (Owner / Admin)
   const handleUpdateStatus = async (orderId, newStatus) => {
     try {
       await api.put(`/orders/${orderId}/status`, { status: newStatus });
       setOrders(orders.map(o => (o._id === orderId ? { ...o, status: newStatus } : o)));
+      dispatch(addToast({ message: `Order status updated to ${newStatus}`, type: 'success' }));
     } catch (err) {
-      alert('Failed to update status');
+      dispatch(addToast({ message: err.response?.data?.message || 'Failed to update status', type: 'error' }));
     }
   };
 
@@ -136,7 +138,7 @@ const Dashboard = () => {
       setProfileMessage('Profile updated successfully!');
       setTimeout(() => setProfileMessage(''), 3000);
     } catch (err) {
-      alert('Failed to update profile');
+      dispatch(addToast({ message: err.response?.data?.message || 'Failed to update profile', type: 'error' }));
     } finally {
       setProfileSaving(false);
     }
@@ -149,7 +151,7 @@ const Dashboard = () => {
     setMenuSaving(true);
     try {
       await api.post(`/restaurants/${myRestaurant._id}/menu`, menuForm);
-      alert('New dish added to menu!');
+      dispatch(addToast({ message: 'New dish added to menu!', type: 'success' }));
       setMenuForm({
         name: '',
         description: '',
@@ -162,7 +164,7 @@ const Dashboard = () => {
       const rRes = await api.get(`/restaurants/${myRestaurant._id}`);
       setMyRestaurant(rRes.data);
     } catch (err) {
-      alert('Failed to add menu item');
+      dispatch(addToast({ message: err.response?.data?.message || 'Failed to add menu item', type: 'error' }));
     } finally {
       setMenuSaving(false);
     }

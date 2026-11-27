@@ -4,7 +4,7 @@ const { getCoupons, applyCoupon, createCoupon } = require('../controllers/coupon
 const { protect, restrictTo } = require('../middleware/authMiddleware');
 
 router.get('/', getCoupons);
-router.post('/apply', applyCoupon);
+router.post('/apply', protect, applyCoupon);
 router.post('/', protect, restrictTo('admin'), createCoupon);
 
 module.exports = router;

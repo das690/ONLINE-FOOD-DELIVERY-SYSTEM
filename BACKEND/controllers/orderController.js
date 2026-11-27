@@ -177,17 +177,18 @@ exports.getMyOrders = async (req, res) => {
 exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
-      .populate('restaurant', 'name imageUrl location address phone')
+      .populate('restaurant', 'name imageUrl location address phone owner')
       .populate('customer', 'name email phone');
 
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    // Check authorization: customer, restaurant owner, or admin
+    // Check authorization: customer, restaurant owner of that restaurant, or admin
     const isCustomer = order.customer && order.customer._id.toString() === req.user._id.toString();
     const isAdmin = req.user.role === 'admin';
-    const isOwner = req.user.role === 'restaurant_owner';
+    const isOwner = req.user.role === 'restaurant_owner' &&
+      order.restaurant?.owner?.toString() === req.user._id.toString();
 
     if (!isCustomer && !isAdmin && !isOwner) {
       return res.status(403).json({ message: 'Not authorized to view this order' });
@@ -204,6 +205,17 @@ exports.getOrderById = async (req, res) => {
 exports.getRestaurantOrders = async (req, res) => {
   try {
     const { restaurantId } = req.params;
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (!restaurant) {
+      return res.status(404).json({ message: 'Restaurant not found' });
+    }
+    if (
+      req.user.role !== 'admin' &&
+      restaurant.owner?.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ message: 'Not authorized to view orders for this restaurant' });
+    }
+
     const orders = await Order.find({ restaurant: restaurantId })
       .populate('customer', 'name email phone address')
       .sort({ createdAt: -1 });
@@ -247,8 +259,15 @@ exports.updateOrderStatus = async (req, res) => {
       return res.status(400).json({ message: `Invalid status. Must be one of: ${validStatuses.join(', ')}` });
     }
 
-    const order = await Order.findById(orderId).populate('restaurant', 'name');
+    const order = await Order.findById(orderId).populate('restaurant', 'name owner');
     if (!order) return res.status(404).json({ message: 'Order not found' });
+
+    if (
+      req.user.role !== 'admin' &&
+      order.restaurant?.owner?.toString() !== req.user._id.toString()
+    ) {
+      return res.status(403).json({ message: 'Not authorized to update status for this order' });
+    }
 
     order.status = status;
     order.statusTimeline.push({

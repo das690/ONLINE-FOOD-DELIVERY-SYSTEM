@@ -85,7 +85,7 @@ const MenuItem = ({ item, restaurantId, restaurantName }) => {
           <img
             src={item.image || defaultFoodImg}
             alt={item.name}
-            className="w-full h-full object-cover hover:scale-108 transition-transform duration-300"
+            className="w-full h-full object-cover hover:scale-[1.08] transition-transform duration-300"
             loading="lazy"
           />
         </div>
