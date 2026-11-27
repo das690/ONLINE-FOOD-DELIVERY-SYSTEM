@@ -15,17 +15,31 @@ const server = http.createServer(app);
 // Environment-aware CORS origins
 // ==========================================
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
+  process.env.CLIENT_URL,
   'http://localhost:5173',
   'http://localhost:5174',
+  'http://localhost:3000',
+  'http://localhost:4173',
   'https://fooodexpress.netlify.app'
 ].filter(Boolean);
+
+const isOriginAllowed = (origin) => {
+  if (!origin) return true;
+  if (allowedOrigins.includes(origin)) return true;
+  if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return true;
+  if (/^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin)) return true;
+  if (/\.netlify\.app$/.test(origin)) return true;
+  if (/\.vercel\.app$/.test(origin)) return true;
+  if (/\.onrender\.com$/.test(origin)) return true;
+  return true; // Allow all web clients for public JWT API
+};
 
 // Initialize Socket.io with unified CORS config
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
+    origin: (origin, callback) => callback(null, true),
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
   }
 });
 
@@ -46,7 +60,7 @@ app.use(helmet({
 
 // CORS - unified with socket.io config
 app.use(cors({
-  origin: allowedOrigins,
+  origin: (origin, callback) => callback(null, true),
   credentials: true
 }));
 
